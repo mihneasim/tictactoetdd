@@ -33,7 +33,12 @@ class TickTackToeTestSuite(unittest.TestCase):
         return (cnt_x, cnt_o)
 
     def next_to_move(self, board):
-        return 'x'
+        cnt_x, cnt_o = self.count_cells(board)
+        if cnt_x == cnt_o:
+            next_to_move = 'x'
+        elif cnt_x - cnt_o == 1:
+            next_to_move = 'o'
+        return next_to_move
 
     #def check_board_is_in_consistent_state(self, board):
     #    cnt_x = self.count_cells(board, 'x')
@@ -89,12 +94,7 @@ class TickTackToeTestSuite(unittest.TestCase):
         board = self.init_board()
 
         self.move(board, 1, 2, 'x')
-        cnt_x, cnt_o = self.count_cells(board)
-        if cnt_x == cnt_o:
-            next_to_move = 'x'
-        elif cnt_x - cnt_o == 1:
-            next_to_move = 'o'
-        self.assertEqual(next_to_move, 'o')
+        self.assertEqual(self.next_to_move(), 'o')
 
     def test_x_is_entitled_to_move_after_o(self):
         """ Test X person is entitled by program to move after O """
