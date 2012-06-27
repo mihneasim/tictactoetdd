@@ -14,7 +14,31 @@ class TickTackToeTestSuite(unittest.TestCase):
         return map(int, user_input.split(","))
 
     def move(self, board, x, y, who):
-        board[x][y] =  who
+        if board[x][y] == ' ':
+            board[x][y] =  who
+            return True
+        return False
+
+    def count_cells_for_player(self, board, who):
+        counter = 0
+        for row in board:
+            for cell in row:
+                if cell == who:
+                    counter += 1
+        return counter
+
+    def count_cells(self, board):
+        cnt_x = self.count_cells_for_player(board, 'x')
+        cnt_o = self.count_cells_for_player(board, 'o')
+        return (cnt_x, cnt_o)
+
+    def next_to_move(self, board):
+        return 'x'
+
+    #def check_board_is_in_consistent_state(self, board):
+    #    cnt_x = self.count_cells(board, 'x')
+    #    cnt_o = self.count_cells(board, 'o')
+    #    return (cnt_x - cnt_o) in (0, 1)
 
     def test_first_cell_empty(self):
         """ Test first cell is empty """
@@ -34,11 +58,8 @@ class TickTackToeTestSuite(unittest.TestCase):
         user_input = '0,1'
         x, y = self.read_user_input(user_input)
         self.move(board, x, y, 'x')
-        counter = 0
-        for row in board:
-            for cell in row:
-                if cell != ' ':
-                    counter += 1
+        (cnt_x, cnt_o) = self.count_cells(board)
+        counter = cnt_x + cnt_o
         self.assertEqual(counter, 1)
 
     def test_requested_cell_is_occupied(self):
@@ -49,21 +70,35 @@ class TickTackToeTestSuite(unittest.TestCase):
         self.move(board, x, y, 'x')
         self.assertTrue(board[x][y] != ' ')
 
-    def test_board_consistent_state(self):
-        """ Tests board is in consistent state """
+    def test_counter_for_moves(self):
+        """ test  """
+        board = self.init_board()
+        self.move(board, 1, 2, 'x')
+        self.move(board, 1, 0, 'x')
+
+        counter = self.count_cells_for_player(board, 'x')
+        self.assertEqual(counter, 2)
+
+    def test_x_is_first_player(self):
+        board = self.init_board()
+        next_to_move = self.next_to_move(board)
+        self.assertEqual(next_to_move, 'x')
+
+    def test_o_is_entitled_to_move_after_x(self):
+        """ Test O person is entitled by program to move after X """
         board = self.init_board()
 
         self.move(board, 1, 2, 'x')
-        #self.move(board, 1, 0, 'x')
-        self.move(board, 1, 1, 'x')
-        self.move(board, 2, 2, '0')
+        cnt_x, cnt_o = self.count_cells(board)
+        if cnt_x == cnt_o:
+            next_to_move = 'x'
+        elif cnt_x - cnt_o == 1:
+            next_to_move = 'o'
+        self.assertEqual(next_to_move, 'o')
 
-        cnt_x = cnt_o = 0
-        for row in board:
-            for cell in row:
-                if cell == 'x':
-                    cnt_x += 1
-                if cell == 'o':
-                    cnt_o += 1
-
-        self.assertTrue((cnt_x - cnt_o) in (0, 1))
+    def test_x_is_entitled_to_move_after_o(self):
+        """ Test X person is entitled by program to move after O """
+        board = self.init_board()
+        self.move(board, 1, 2, 'x')
+        self.move(board, 2, 2, 'o')
+        self.assertEqual(self.next_to_move(), 'x')
