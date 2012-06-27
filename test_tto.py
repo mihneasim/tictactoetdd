@@ -54,7 +54,7 @@ class TickTackToeTestSuite(unittest.TestCase):
         board = self.init_board()
 
         self.move(board, 1, 2, 'x')
-        self.move(board, 1, 0, 'x')
+        #self.move(board, 1, 0, 'x')
         self.move(board, 1, 1, 'x')
         self.move(board, 2, 2, '0')
 
