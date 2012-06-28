@@ -2,7 +2,7 @@ import unittest
 import random
 
 
-class TickTackToeTestSuite(unittest.TestCase):
+class TicTacToeTestSuite(unittest.TestCase):
 
 
     def init_board(self):
