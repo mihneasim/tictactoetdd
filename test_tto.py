@@ -13,7 +13,8 @@ class TickTackToeTestSuite(unittest.TestCase):
     def read_user_input(self, user_input):
         return map(int, user_input.split(","))
 
-    def move(self, board, x, y, who):
+    def move(self, board, cell, who):
+        x, y = cell
         if board[x][y] == ' ':
             board[x][y] =  who
             return True
@@ -40,6 +41,10 @@ class TickTackToeTestSuite(unittest.TestCase):
             next_to_move = 'o'
         return next_to_move
 
+    def get_value_in_cell(self, board, cell):
+        x, y = cell
+        return board[x][y]
+
     #def check_board_is_in_consistent_state(self, board):
     #    cnt_x = self.count_cells(board, 'x')
     #    cnt_o = self.count_cells(board, 'o')
@@ -61,8 +66,8 @@ class TickTackToeTestSuite(unittest.TestCase):
         """ Test that after first read, one cell is filled """
         board = self.init_board()
         user_input = '0,1'
-        x, y = self.read_user_input(user_input)
-        self.move(board, x, y, 'x')
+        cell = self.read_user_input(user_input)
+        self.move(board, cell, 'x')
         (cnt_x, cnt_o) = self.count_cells(board)
         counter = cnt_x + cnt_o
         self.assertEqual(counter, 1)
@@ -71,15 +76,17 @@ class TickTackToeTestSuite(unittest.TestCase):
         """ Testing a cell requested by user to move is already taken """
         board = self.init_board()
         user_input = '1,2'
-        x, y = self.read_user_input(user_input)
-        self.move(board, x, y, 'x')
-        self.assertTrue(board[x][y] != ' ')
+        cell = self.read_user_input(user_input)
+        self.move(board, cell, 'x')
+        self.assertTrue(self.get_value_in_cell(board, cell) != ' ')
 
     def test_counter_for_moves(self):
         """ test  """
         board = self.init_board()
-        self.move(board, 1, 2, 'x')
-        self.move(board, 1, 0, 'x')
+        cell = (1, 2)
+        self.move(board, cell, 'x')
+        cell = (1, 0)
+        self.move(board, cell, 'x')
 
         counter = self.count_cells_for_player(board, 'x')
         self.assertEqual(counter, 2)
@@ -93,12 +100,15 @@ class TickTackToeTestSuite(unittest.TestCase):
         """ Test O person is entitled by program to move after X """
         board = self.init_board()
 
-        self.move(board, 1, 2, 'x')
-        self.assertEqual(self.next_to_move(), 'o')
+        cell = (1, 2)
+        self.move(board, cell, 'x')
+        self.assertEqual(self.next_to_move(board), 'o')
 
     def test_x_is_entitled_to_move_after_o(self):
         """ Test X person is entitled by program to move after O """
         board = self.init_board()
-        self.move(board, 1, 2, 'x')
-        self.move(board, 2, 2, 'o')
-        self.assertEqual(self.next_to_move(), 'x')
+        cell = (1, 2)
+        self.move(board, cell, 'x')
+        cell = (1, 2)
+        self.move(board, cell, 'o')
+        self.assertEqual(self.next_to_move(board), 'x')
